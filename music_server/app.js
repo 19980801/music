@@ -117,7 +117,7 @@ server.get("/listall",(req,res)=>{
   var obj={code:1};
   // 创建变量保存进度
   var progress=0;
-  var sql="SELECT id,msg,point,a_href,img_url,family FROM wy_musiclist LIMIT ?,?";
+  var sql="SELECT tid,msg,point,a_href,img_url,family FROM wy_musiclist LIMIT ?,?";
   var count=(pno-1)*pageSize;
   pageSize=parseInt(pageSize);
   pool.query(sql,[count,pageSize],(err,result)=>{
@@ -129,7 +129,7 @@ server.get("/listall",(req,res)=>{
     res.send(obj);
   });
   // 计算总页数
-  pool.query("SELECT count(id) AS c FROM wy_musiclist",(err,result)=>{
+  pool.query("SELECT count(tid) AS c FROM wy_musiclist",(err,result)=>{
     if(err) throw err;
     progress+=5;
     var pc=Math.ceil(result[0].c/pageSize);
@@ -143,7 +143,7 @@ server.get("/listall",(req,res)=>{
 
 // 热门推荐
 server.get("/list1",(req,res)=>{
-  var sql=`SELECT id,msg,point,a_href,img_url,family FROM wy_musiclist WHERE family='热门推荐'`;
+  var sql=`SELECT tid,msg,point,a_href,img_url,family FROM wy_musiclist WHERE family='热门推荐'`;
   pool.query(sql,(err,result)=>{
     if(err) throw err;
     res.send({code:1,data:result});
@@ -151,7 +151,7 @@ server.get("/list1",(req,res)=>{
 });
 // 华语
 server.get("/list2",(req,res)=>{
-  var sql=`SELECT id,msg,point,a_href,img_url,family FROM wy_musiclist WHERE family='华语'`;
+  var sql=`SELECT tid,msg,point,a_href,img_url,family FROM wy_musiclist WHERE family='华语'`;
   pool.query(sql,(err,result)=>{
     if(err) throw err;
     res.send({code:1,data:result});
@@ -159,7 +159,7 @@ server.get("/list2",(req,res)=>{
 });
 // 流行
 server.get("/list3",(req,res)=>{
-  var sql=`SELECT id,msg,point,a_href,img_url,family FROM wy_musiclist WHERE family='流行'`;
+  var sql=`SELECT tid,msg,point,a_href,img_url,family FROM wy_musiclist WHERE family='流行'`;
   pool.query(sql,(err,result)=>{
     if(err) throw err;
     res.send({code:1,data:result});
@@ -167,7 +167,7 @@ server.get("/list3",(req,res)=>{
 });
 // 摇滚
 server.get("/list4",(req,res)=>{
-  var sql=`SELECT id,msg,point,a_href,img_url,family FROM wy_musiclist WHERE family='摇滚'`;
+  var sql=`SELECT tid,msg,point,a_href,img_url,family FROM wy_musiclist WHERE family='摇滚'`;
   pool.query(sql,(err,result)=>{
     if(err) throw err;
     res.send({code:1,data:result});
@@ -175,7 +175,7 @@ server.get("/list4",(req,res)=>{
 });
 // 民谣
 server.get("/list5",(req,res)=>{
-  var sql=`SELECT id,msg,point,a_href,img_url,family FROM wy_musiclist WHERE family='民谣'`;
+  var sql=`SELECT tid,msg,point,a_href,img_url,family FROM wy_musiclist WHERE family='民谣'`;
   pool.query(sql,(err,result)=>{
     if(err) throw err;
     res.send({code:1,data:result});
@@ -183,7 +183,7 @@ server.get("/list5",(req,res)=>{
 });
 // 电子
 server.get("/list6",(req,res)=>{
-  var sql=`SELECT id,msg,point,a_href,img_url,family FROM wy_musiclist WHERE family='电子'`;
+  var sql=`SELECT tid,msg,point,a_href,img_url,family FROM wy_musiclist WHERE family='电子'`;
   pool.query(sql,(err,result)=>{
     if(err) throw err;
     res.send({code:1,data:result});
@@ -192,7 +192,7 @@ server.get("/list6",(req,res)=>{
 
 // 个性推荐随机取9条数据
 server.get("/rand",(req,res)=>{
-  var sql="SELECT id,msg,point,a_href,img_url,family FROM wy_musiclist order by rand() LIMIT 6";
+  var sql="SELECT tid,msg,point,a_href,img_url,family FROM wy_musiclist order by rand() LIMIT 6";
   pool.query(sql,(err,result)=>{
     if(err) throw err;
     res.send({code:1,data:result});
@@ -201,9 +201,108 @@ server.get("/rand",(req,res)=>{
 
 // 新歌查询
 server.get("/newlist",(req,res)=>{
-  var sql="SELECT id,title,author,a_href,img_url FROM wy_music WHERE family LIKE '%新歌%'";
+  var sql="SELECT cid,title,author,a_href,img_url FROM wy_music WHERE family LIKE '%新歌%'";
   pool.query(sql,(err,result)=>{
     if(err) throw err;
     res.send({code:1,data:result});
+  })
+});
+
+//每日推荐30首歌
+server.get("/daylist",(req,res)=>{
+  var sql="SELECT cid,title,author,a_href,img_url FROM wy_music order by rand() LIMIT 30";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result});
+  })
+});
+
+// 歌手列表 随机
+server.get("/singer",(req,res)=>{
+  var sql="SELECT sid,author,a_href,img_url FROM wy_singer order by rand() LIMIT 12";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result});
+  })
+});
+
+// 歌手列表 全部
+server.get("/singerlist",(req,res)=>{
+  var sql="SELECT sid,author,a_href,img_url FROM wy_singer";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result});
+  })
+});
+
+//电台
+server.get("/radio1",(req,res)=>{
+  var sql="SELECT oid,author,title,a_href,img_url FROM wy_radio WHERE family LIKE '%推荐%'";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result})
+  })
+});
+server.get("/radio2",(req,res)=>{
+  var sql="SELECT oid,author,title,a_href,img_url FROM wy_radio WHERE family LIKE '%创作%'";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result})
+  })
+});
+server.get("/radio3",(req,res)=>{
+  var sql="SELECT oid,author,title,a_href,img_url FROM wy_radio WHERE family LIKE '%电子%'";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result})
+  })
+});
+server.get("/radio4",(req,res)=>{
+  var sql="SELECT oid,author,title,a_href,img_url FROM wy_radio WHERE family LIKE '%情感%'";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result})
+  })
+});
+server.get("/radio5",(req,res)=>{
+  var sql="SELECT oid,author,title,a_href,img_url FROM wy_radio WHERE family LIKE '%音乐故事%'";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result})
+  })
+});
+server.get("/radio6",(req,res)=>{
+  var sql="SELECT oid,author,title,a_href,img_url FROM wy_radio WHERE family LIKE '%二次元%'";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result})
+  })
+});
+server.get("/radio7",(req,res)=>{
+  var sql="SELECT oid,author,title,a_href,img_url FROM wy_radio WHERE family LIKE '%美文读物%'";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result})
+  })
+});
+server.get("/radio8",(req,res)=>{
+  var sql="SELECT oid,author,title,a_href,img_url FROM wy_radio WHERE family LIKE '%知识技能%'";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result})
+  })
+});
+server.get("/radio9",(req,res)=>{
+  var sql="SELECT oid,author,title,a_href,img_url FROM wy_radio WHERE family LIKE '%商业财经%'";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result})
+  })
+});
+server.get("/radio10",(req,res)=>{
+  var sql="SELECT oid,author,title,a_href,img_url FROM wy_radio WHERE family LIKE '%脱口秀%'";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result})
   })
 });

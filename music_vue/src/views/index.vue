@@ -19,27 +19,27 @@
 						<div class="nav">
 							<ul class="list-unstyled d-flex mt-3">
 								<li>
-									<a href="#">
+									<router-link to="daylist">
 										<img src="http://127.0.0.1:3001/imgs/nav1.png">
-									</a>
+									</router-link>
 									<p>每日推荐</p>
 								</li>
 								<li>
-									<a href="#">
+									<router-link to="toplist">
 										<img src="http://127.0.0.1:3001/imgs/nav2.png">
-									</a>
+									</router-link>
 									<p>排行榜单</p>
 								</li>
 								<li>
-									<a href="#">
+									<router-link to="singer">
 										<img src="http://127.0.0.1:3001/imgs/nav3.png">
-									</a>
-									<p>歌单</p>
+									</router-link>
+									<p>歌手</p>
 								</li>
 								<li>
-									<a href="#">
+									<router-link to="radio">
 										<img src="http://127.0.0.1:3001/imgs/nav4.png">
-									</a>
+									</router-link>
 									<p>电台</p>
 								</li>
 							</ul>
@@ -139,8 +139,8 @@
 								<div v-show="show===1" class="list">
 									<ul class="list-unstyled">
 										<li v-for="(item,i) of musicList" :key="i">
-											<div class="mui-table-view-cell p-1">
-												<div class="mui-slider-right" >
+											<div class="mui-table-view-cell p-1" >
+												<div class="mui-slider-right">
 													<a class="mui-btn mui-btn-red text-white">删除</a>
 												</div>
 												<div class="mui-slider-handle">
@@ -366,13 +366,52 @@
 						<h4 class="text-dark">手机电脑多端同步，尽享海量高品质音乐</h4>
 						<span class="mui-btn mui-btn-danger">登录</span>
 					</section>
-					<div class="bg-white mt-2">
-						<ul class="list-unstyled">
+					<div class="mt-2 set">
+						<ul class="list-unstyled bg-white mb-2">
 							<li>
 								<span class="iconfont icon-shezhi">设置</span>
-								
+								<span class="mui-icon mui-icon-arrowright"></span>
+							</li>
+							<li class="mui-table-view-cell">
+					     	<span class="iconfont icon-yejianmoshi">夜间模式</span>
+								<div class="mui-switch mui-switch-mini">
+									<div class="mui-switch-handle"></div>
+								</div>
+							</li>
+							<li>
+								<span class="iconfont icon-dingshi_l">定时关闭</span>
+								<span class="mui-icon mui-icon-arrowright"></span>	
+							</li>
+							<li>
+								<span class="iconfont icon-naozhong">音乐闹钟</span>
+								<span class="mui-icon mui-icon-arrowright"></span>
 							</li>
 						</ul>
+						<ul class="bg-white list-unstyled mb-2 set">
+							<li>
+								<span class="iconfont icon-ico_zaixiankefu">在线听歌免流量</span>
+								<span class="mui-icon mui-icon-arrowright"></span>
+							</li>
+							<li>
+								<span class="iconfont icon-airudiantubiaohuizhi-zhuanqu_youxi">精品游戏推荐</span>
+								<span class="mui-icon mui-icon-arrowright"></span>
+							</li>
+							<li>
+								<span class="iconfont icon-youhuiquan-m">优惠券</span>
+								<span class="mui-icon mui-icon-arrowright"></span>
+							</li>
+						</ul>
+						<ul class="bg-white list-unstyled set">
+							<li>
+								<span class="iconfont icon-fenxiang">分享网易云音乐</span>
+								<span class="mui-icon mui-icon-arrowright"></span>
+							</li>
+							<li>
+								<span class="iconfont icon-guanyuwomen">关于我们</span>
+								<span class="mui-icon mui-icon-arrowright"></span>
+							</li>
+						</ul>	
+						<button type="button" class="mui-btn mui-btn-block">退出登录</button>
 					</div>
 				</div>
 			</div>
@@ -444,6 +483,18 @@ export default {
 		this.navlist5();
 		this.navlist6();
 		this.new();
+	},
+	mounted(){
+		mui.init({
+			//启用右滑关闭功能
+      swipeBack:true 
+    });
+  	mui(document.body).on('tap', '.mui-btn', function(e) {
+  	    mui(this).button('loading');
+  	    setTimeout(function() {
+  	        mui(this).button('reset');
+  	    }.bind(this),1000);
+		});
 	},
 	methods: {
 		banner(){
@@ -760,5 +811,20 @@ export default {
 		padding:10px 0;
 		margin:10px;
 		border-radius:15px;
+	}
+	.app-index #tabbar-with-my .set ul>li{
+		padding:10px;
+		border-bottom:1px solid #ddd;
+		display:flex;
+		justify-content:space-between;
+	}
+	.app-index #tabbar-with-my .set .mui-table-view-cell::after{
+    height:0px;
+	}
+	.app-index #tabbar-with-my .set .mui-btn-block{
+		font-size:16px;
+		color:red;
+		font-weight:bold;
+		border:0;
 	}
 </style>

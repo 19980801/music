@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="top">
-      <router-link class="mui-icon mui-icon-back float-left text-dark" to="index"></router-link>
+      <router-link class="mui-icon mui-icon-back float-left text-white" to="index"></router-link>
       <span>歌单广场</span>
     </div>
     <header>
@@ -201,8 +201,7 @@ export default {
       if(this.hasMore==false){
         this.$toast("没有更多数据了");
         return;
-      }
-      console.log(123);
+      } 
       this.pno++;
       this.axios.get("http://127.0.0.1:3001/listall",{
         params:{
