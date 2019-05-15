@@ -3,11 +3,7 @@
 		<section>
 			<div class="mui-content">
 				<div id="tabbar" class="mui-control-content mui-active">
-					<div class="title page1-header">
-						<span class="mui-icon mui-icon-mic float-left"></span>
-						<img src="http://127.0.0.1:3001/imgs/search.png">
-						<input type="text" class="search" placeholder="搜索音乐、歌词、电台">
-					</div>
+					<my-search></my-search>
 					<div class="container p-0 pb-4">
 						<div class="banner">
 							<mt-swipe :auto="8000">
@@ -136,7 +132,7 @@
 										<span class="iconfont icon-gengduo font-weight-bold"></span>
 									</div>
 								</div>
-								<div v-show="show===1" class="list">
+								<div v-show="show===1" class="list" v-if="isLogin">
 									<ul class="list-unstyled">
 										<li v-for="(item,i) of musicList" :key="i">
 											<div class="mui-table-view-cell p-1" >
@@ -169,7 +165,7 @@
 										<span class="iconfont icon-gengduo font-weight-bold"></span>
 									</div>
 								</div>
-								<div v-show="show===2" class="list">
+								<div v-show="show===2" class="list" v-if="isLogin">
 									<ul class="list-unstyled">
 										<li v-for="(item,i) of likeList" :key="i">
 											<div class="mui-table-view-cell p-1">
@@ -362,9 +358,19 @@
 						<span>账号</span>
 					</header>
 					<section class="bg-white pt-4">
-						<h4 class="text-dark">登录网易云音乐</h4>
-						<h4 class="text-dark">手机电脑多端同步，尽享海量高品质音乐</h4>
-						<span class="mui-btn mui-btn-danger">登录</span>
+						<div v-if="isLogin==false">
+							<h4 class="text-dark">登录网易云音乐</h4>
+							<h4 class="text-dark">手机电脑多端同步，尽享海量高品质音乐</h4>
+							<router-link to="login" class="mui-btn mui-btn-danger text-white">登录</router-link>
+						</div>
+						<div v-else class="true">
+							<img :src="img">
+							<div  @click.stop="uploadHeadImg">
+								<span class="mui-icon mui-icon-compose"></span>
+								<input type="file" accept="image/*" class="hiddenInput">
+							</div>
+							<p class="text-dark">{{uname}}</p>
+						</div>
 					</section>
 					<div class="mt-2 set">
 						<ul class="list-unstyled bg-white mb-2">
@@ -411,7 +417,7 @@
 								<span class="mui-icon mui-icon-arrowright"></span>
 							</li>
 						</ul>	
-						<button type="button" class="mui-btn mui-btn-block">退出登录</button>
+						<button type="button" class="mui-btn mui-btn-block" v-show="isLogin" @click="exit">退出登录</button>
 					</div>
 				</div>
 			</div>
@@ -439,7 +445,8 @@
 	</div>
 </template>
 <script>
-import mySwiper from './swiper'
+import mySearch from "@/components/search.vue";
+import mySwiper from './swiper';
 export default {
 	data(){
 		return{
@@ -467,14 +474,17 @@ export default {
 			list7:[],
 			// 新歌列表
 			newList:[],
+			// 判断是否登录
+			isLogin:false,
+			img_url:"",
+			uname:"",
 		}
 	},
 	created() {
+		this.login();
 		this.banner();
 		this.playlist();
 		this.readlist();
-		this.musiclist();
-		this.likelist();
 		this.navlist();
 		this.navlist1();
 		this.navlist2();
@@ -483,20 +493,23 @@ export default {
 		this.navlist5();
 		this.navlist6();
 		this.new();
-	},
-	mounted(){
-		mui.init({
-			//启用右滑关闭功能
-      swipeBack:true 
-    });
-  	mui(document.body).on('tap', '.mui-btn', function(e) {
-  	    mui(this).button('loading');
-  	    setTimeout(function() {
-  	        mui(this).button('reset');
-  	    }.bind(this),1000);
-		});
-	},
+	},	
 	methods: {
+		login(){
+			if(sessionStorage.getItem("uname")){
+				this.uname=sessionStorage.getItem("uname");
+				this.img=sessionStorage.getItem("img_url");
+				this.isLogin=true;
+				this.musiclist();
+				this.likelist();
+			}
+		},
+		exit(){
+			sessionStorage.removeItem("uname");
+			sessionStorage.removeItem("img_url");
+			this.isLogin=false;
+			this.$toast("已退出");
+		},
 		banner(){
 			this.axios.get("http://127.0.0.1:3001/banner").then(res=>{
 				this.bannerList=res.data.data;
@@ -513,7 +526,7 @@ export default {
 			})
 		},
 		prev(){
-		this.$router.go(-1);
+			this.$router.go(-1);
 		},
 		closeOnClickModal(){
 			this.popupVisible=!this.popupVisible;
@@ -592,9 +605,14 @@ export default {
 			this.axios.get("http://127.0.0.1:3001/newlist").then(res=>{
 				this.newList=res.data.data;
 			})
-		}
+		},
+		// 更改头像
+		uploadHeadImg(){
+			this.$el.querySelector('.hiddenInput').click()
+		},
 	},
 	components:{
+		mySearch,
 		mySwiper
 	}
 }
@@ -607,31 +625,6 @@ export default {
 	.app-index a{
 		color:#fff;
 		text-decoration:none;
-	}
-	.app-index .page1-header{
-		background-color:#C20C0C;
-		height:50px;
-		line-height:50px;
-	}
-	.app-index .search{
-		width:250px;
-		height:35px;
-		border:0;
-		border-radius:30px;
-	}
-	.app-index .page1-header input[type="text"]{
-		font-size:14px;
-	}
-	.app-index .page1-header img{
-		position:absolute;
-		top:17px;
-		left:310px;
-	}
-	.app-index .page1-header .mui-icon{
-		font-size:36px;
-		margin-top:4px;
-		margin-left:10px;
-		color:#fff;
 	}
 	.app-index .banner .mint-swipe{
 		height:200px;
@@ -826,5 +819,24 @@ export default {
 		color:red;
 		font-weight:bold;
 		border:0;
+	}
+	.app-index #tabbar-with-my  section .true{
+		position: relative;
+		padding:8px;
+	}
+	.app-index #tabbar-with-my  section .true img{
+		width:100px;
+		height:100px;
+		border-radius:50%;
+	}
+	.app-index #tabbar-with-my  section .true span{
+		position:absolute;
+		top:80px;
+		right:150px;
+		font-size:30px;
+		color:#000;
+	}
+	.app-index #tabbar-with-my  section .true .hiddenInput{
+		display:none;
 	}
 </style>

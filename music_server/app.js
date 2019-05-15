@@ -3,6 +3,13 @@ const mysql=require("mysql");
 const express=require("express");
 // 引入跨域模块
 const cors=require("cors");
+const bodyparser=require("body-parser");
+// 引入session模块
+const session=require("express-session");
+const multer=require("multer");
+// 完成把文件移动到指定目录
+const fs=require("fs");
+var upload=multer({dest:"upload/"});
 // 创建连接池
 const pool=mysql.createPool({
   host:"127.0.0.1",
@@ -12,6 +19,18 @@ const pool=mysql.createPool({
 })
 // 创建express对象
 var server=express();
+
+//配置session
+server.use(session({
+  // 配置密钥
+  secret:"128位字符串",
+  // 每次请求是否更新数据
+  // resave:true;加路由后该为true
+  resave:false,
+  // 保存初始化数据
+  saveUninitialized:true, 
+
+}));
 
 // 绑定监听端口
 server.listen(3001,()=>{
@@ -26,6 +45,9 @@ server.use(cors({
   // 提高安全性，每次访问都会验证
   credentials:true
 }));
+
+// 使用
+server.use(bodyparser.urlencoded({extended:false}));
 
 // 轮播图
 server.get("/banner",(req,res)=>{
@@ -70,39 +92,6 @@ server.get("/createmuscilist",(req,res)=>{
     }else{
       res.send({code:1,msg:"添加成功!"});
     }
-  })
-});
-
-//查询创建的歌单
-server.get("/musiclist",(req,res)=>{
-  var sql="SELECT mid,title FROM wy_mymusiclist";
-  pool.query(sql,(err,result)=>{
-    if(err) throw err;
-    res.send({code:1,data:result});
-  })
-});
-
-// 删除创建的歌单
-server.get("/delmusiclist",(req,res)=>{
-  var mid=req.query.mid;
-  console.log(mid);
-  var sql="DELETE FROM wy_mymusiclist WHERE mid=?";
-  pool.query(sql,[mid],(err,result)=>{
-    if(err) throw err;
-    if(result.affectedRows==0){
-      res.send({code:-1,msg:"删除失败!"});
-    }else{
-      res.send({code:1,msg:"删除成功!"});
-    }
-  })
-});
-
-// 查询收藏的歌单
-server.get("/likelist",(req,res)=>{
-  var sql="SELECT lid,title,author FROM wy_mylikelist";
-  pool.query(sql,(err,result)=>{
-    if(err) throw err;
-    res.send({code:1,data:result});
   })
 });
 
@@ -305,4 +294,133 @@ server.get("/radio10",(req,res)=>{
     if(err) throw err;
     res.send({code:1,data:result})
   })
+});
+
+// 用户登录
+server.get("/login",(req,res)=>{
+  var phone=req.query.phone;
+  var upwd=req.query.upwd;
+  var sql="SELECT uid,uname,img_url FROM wy_user WHERE phone=? AND upwd=md5(?)";
+  pool.query(sql,[phone,upwd],(err,result)=>{
+    if(err) throw err;
+    if(result.length>0){
+      var uid=result[0].uid;
+      console.log(uid);
+      req.session.uid=uid;
+      console.log(req.session.uid);
+      res.send({code:1,data:result});
+    }else{
+     res.send({code:-1,msg:"登录失败"});
+    }
+  })
+});
+// 用户注册
+server.post("/reg",(req,res)=>{
+  var phone=req.body.phone;
+  var upwd=req.body.upwd;
+  var upwd2=req.body.upwd2;
+  var uname=req.body.uname;
+  var email=req.body.email;
+  var img_url="http://127.0.0.1:3001/imgs/user.jpg";
+  var sql="INSERT INTO wy_user VALUES(null,?,md5(?),md5(?),?,?,?)";
+  pool.query(sql,[uname,upwd,upwd2,email,phone,img_url],(err,result)=>{
+    if(err) throw err;
+    if(result.affectedRows>0){
+      res.write(JSON.stringify({code:1,msg:"注册成功"}));
+    }else{
+      res.write(JSON.stringify({code:0,msg:"注册失败"}));
+    }
+    res.end();
+  })
+});
+
+// 用户搜索
+server.get("/search",(req,res)=>{
+  var family=req.query.family;
+  var sql=`SELECT tid,msg,point,a_href,img_url FROM wy_musiclist WHERE family LIKE '%${family}%'`; 
+  pool.query(sql,[family],(err,result)=>{
+    if(err) throw err;
+    if(result.length>0){
+      res.send({code:1,data:result});
+    }else{
+      res.send({code:-1,msg:"查询失败"});
+    }
+  })
+}); 
+
+//查询创建的歌单
+server.get("/musiclist",(req,res)=>{
+  // var uid=req.session.uid;
+  // console.log(uid);
+  // if(!uid){
+  //   res.send({code:-1,msg:"请登录",data:[]});
+  //   return;
+  // }
+  var sql="SELECT mid,title FROM wy_mymusiclist";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result});
+  })
+});
+
+// 删除创建的歌单
+server.get("/delmusiclist",(req,res)=>{
+  var mid=req.query.mid;
+  // console.log(mid);
+  var sql="DELETE FROM wy_mymusiclist WHERE mid=?";
+  pool.query(sql,[mid],(err,result)=>{
+    if(err) throw err;
+    if(result.affectedRows==0){
+      res.send({code:-1,msg:"删除失败!"});
+    }else{
+      res.send({code:1,msg:"删除成功!"});
+    }
+  })
+});
+
+// 查询收藏的歌单
+server.get("/likelist",(req,res)=>{
+  // var uid=req.session.uid;
+  // console.log(uid);
+  var sql="SELECT lid,title,author FROM wy_mylikelist";
+  pool.query(sql,(err,result)=>{
+    if(err) throw err;
+    res.send({code:1,data:result});
+  })
+});
+
+// 修改密码
+server.post("/updata",(req,res)=>{
+  var phone=req.body.phone;
+  var upwd=req.body.upwd;
+  var upwd2=req.body.upwd2;
+  var sql="UPDATE wy_user SET upwd=md5(?),upwd2=md5(?) WHERE phone=?";
+  pool.query(sql,[upwd,upwd2,phone],(err,result)=>{
+    if(err) throw err;
+    if(result.affectedRows>0){
+      res.write(JSON.stringify({code:1,msg:"修改成功"}));
+    }else{
+      res.write(JSON.stringify({code:0,msg:"修改失败"}));
+    }
+    res.end();
+  })
+});
+
+//修改头像
+server.post("/uploadFile",upload.single("mypic"),(req,res)=>{
+  // 获取原文件名
+  var src=req.file.originalname;
+  console.log(src);
+  // 创建新文件名
+  var t=new Date().getTime();
+  var tn=Math.floor(Math.random()*9999);
+  // 查找后缀下标
+  var i3=src.lastIndexOf(".");
+  // 从i3位置开始截取
+  var suff=src.substring(i3);
+  var des=__dirname+"/upload/"+t+tn+suff;
+  console.log(des);
+  // 将临时文件移动到upload目录下  fs.renameSynv(临时文件,新文件)
+  fs.renameSync(req.file.path,des);
+  res.send({code:1,msg:"上传成功"});
 });

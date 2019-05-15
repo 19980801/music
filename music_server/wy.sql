@@ -10,10 +10,16 @@ CREATE TABLE wy_user(
     upwd VARCHAR(128),
     upwd2 VARCHAR(128),
     email VARCHAR(32),
-    phone CHAR(11)
+    phone CHAR(11),
+    img_url VARCHAR(128)
 );
 
-#index数据f1 
+INSERT INTO wy_user VALUES
+(1,"tom",md5("123456"),md5("123456"),"123456@qq.com","18224565842","http://127.0.0.1:3001/imgs/user1.png"),
+(3,"tom11",'123456',"123456","123456@qq.com","11111111111","http://127.0.0.1:3001/imgs/user1.png"),
+(2,"jerry",md5("123456"),md5("123456"),"123456@qq.com","15936577674","http://127.0.0.1:3001/imgs/user2.png"); 
+
+#index数据f1  
 CREATE TABLE wy_play_list(
   pid INT PRIMARY KEY AUTO_INCREMENT,
   point VARCHAR(32),
@@ -72,25 +78,27 @@ INSERT INTO wy_readlist VALUES
 #我创建的歌单表
 CREATE TABLE wy_mymusiclist(
   mid INT PRIMARY KEY AUTO_INCREMENT,
-  title VARCHAR(128)
+  title VARCHAR(128),
+  uid INT
 );
 INSERT INTO wy_mymusiclist VALUES
-(1,"我喜欢的歌单"),
-(null,"随便听的"),
-(null,"经常听的"),
-(null,"还可以吧");
+(1,"我喜欢的歌单","1"),
+(null,"随便听的","1"),
+(null,"经常听的","2"),
+(null,"还可以吧","2");
 
 #我收藏的歌单
 CREATE TABLE wy_mylikelist(
   lid INT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(128),
-  author VARCHAR(64)
+  author VARCHAR(64),
+  uid INT 
 );
 
 INSERT INTO wy_mylikelist VALUES
-(1,"民谣200首【精选】","秋白DW"),
-(null,"【吴青峰】惊艳了时光的主唱大人","Carol骨头"),
-(null,"女声live|诉说惆怅之中的一抹温柔","慢门先生");
+(1,"民谣200首【精选】","秋白DW",1),
+(null,"【吴青峰】惊艳了时光的主唱大人","Carol骨头",1),
+(null,"女声live|诉说惆怅之中的一抹温柔","慢门先生",2);
 
 #歌单类别
 CREATE TABLE wy_musiclist(

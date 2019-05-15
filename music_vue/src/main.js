@@ -23,8 +23,9 @@ Vue.use(Carousel3d);
 Vue.use(MintUI);
 Vue.config.productionTip = false
 //让axios的请求携带验证信息到服务端
-axios.defaults.withCredentials=true;
-Vue.prototype.axios=axios;
+axios.defaults.withCredentials=true
+Vue.prototype.axios=axios
+
 
 Vue.directive('anchor',{
   inserted : function(el,binding){
@@ -33,6 +34,14 @@ Vue.directive('anchor',{
     }
   }
 });
+// Vue.filter("imgFilter",function(val){
+//   var  str=String(val);
+//   return str;
+// })
+// Vue.filter("phoneFilter",function(val){
+//   var  str=String(val);
+//   return str;
+// })
 
 new Vue({
   router,
