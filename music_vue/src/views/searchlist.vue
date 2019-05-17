@@ -3,7 +3,7 @@
     <my-search></my-search>
     <section class="bg-white">
       <ul class="list-unstyled" v-if="ishave">
-        <li class="text-left" v-for="item in list" :key="item.i">  
+        <li class="text-left" v-for="item in list" :key="item.i">
           <a :href="item.a_href" class="d-flex">
             <img :src="item.img_url">
             <div class="text-dark mt-4">

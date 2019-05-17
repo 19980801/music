@@ -167,10 +167,10 @@
 								</div>
 								<div v-show="show===2" class="list" v-if="isLogin">
 									<ul class="list-unstyled">
-										<li v-for="(item,i) of likeList" :key="i">
-											<div class="mui-table-view-cell p-1">
-												<div class="mui-slider-right" >
-													<a class="mui-btn mui-btn-red text-white">删除</a>
+										<li v-for="(item,i) of likeList" :key="i" class="mid">
+											<div class="mui-table-view-cell p-1" @click="dels">
+												<div class="mui-slider-right"  >
+													<a class="mui-btn mui-btn-red text-white" >删除</a>
 												</div>
 												<div class="mui-slider-handle">
 													<div class="mui-media">
@@ -476,7 +476,7 @@ export default {
 			newList:[],
 			// 判断是否登录
 			isLogin:false,
-			img_url:"",
+			img:"",
 			uname:"",
 		}
 	},
@@ -495,6 +495,11 @@ export default {
 		this.new();
 	},	
 	methods: {
+			dels(){
+			var mid=document.querySelector(".mid");
+			console.log(mid);
+			mid.style.display="none";
+		},
 		login(){
 			if(sessionStorage.getItem("uname")){
 				this.uname=sessionStorage.getItem("uname");
@@ -558,6 +563,7 @@ export default {
 		musiclist(){
 			this.axios.get("http://127.0.0.1:3001/musiclist").then(res=>{
 				this.musicList=res.data.data;
+				console.log(this.musicList);
 			})
 		},
 		likelist(){
@@ -610,6 +616,7 @@ export default {
 		uploadHeadImg(){
 			this.$el.querySelector('.hiddenInput').click()
 		},
+	
 	},
 	components:{
 		mySearch,

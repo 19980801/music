@@ -34,7 +34,7 @@ export default {
         this.$router.push(`/searchlist/${this.key}`);
       }
       if(this.$route.path.split("/")[1]=="searchlist"){
-        console.log(this.$route.path.split("/")[1])
+        // console.log(this.$route.path.split("/")[1])
         location.reload();
       }
     }
