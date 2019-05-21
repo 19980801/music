@@ -1,8 +1,10 @@
 <template>
 	<header>
-		<span class="mui-icon mui-icon-mic float-left mt-2 ml-2"></span>
-		<input type="text" placeholder="搜索音乐、歌词、电台" v-model="key" v-focus @keyup.13="search">
-		<img src="http://127.0.0.1:3001/imgs/search.png" @click="search">
+    <span class="mui-icon mui-icon-mic float-left mt-2 ml-2"></span>
+    <div class="search">
+      <input type="text" placeholder="搜索音乐、歌词、电台" v-model="key" v-focus @keyup.13="search">
+      <img src="http://127.0.0.1:3001/imgs/search.png" @click="search">
+    </div>
 	</header>
 </template>
 <script>
@@ -47,7 +49,7 @@ export default {
     color:#fff;
     height:50px;
     line-height:50px;
-    position: relative;
+    width:100%;
   }
   header input{
     width:250px;
@@ -61,9 +63,11 @@ export default {
   header img{
     position:absolute;
     top:17px;
-    right:80px;
+    /* right:80px; */
+    right:20%;
   }
   header input[type="text"]{
+    top:8px;
     font-size:15px;
     color:#000;
   }

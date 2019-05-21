@@ -62,16 +62,16 @@ export default {
   div{
     background-color:#C20C0C;
     height:100%;
+    width:100%;
   }
   section{
-    margin:100px 75px 0 75px; 
+    margin:50px auto; 
   }
   section a{
-    display:block;
     padding:12px;
     width:250px;
     border-radius:30px;
-    margin:10px;
+    margin:10px 0;
     outline:0;
     font-size:16px;
   }
@@ -94,11 +94,9 @@ export default {
     color:#fff;
   }
   footer p::after{
-    content:"—————";
-    padding:10px;
+    content:"———";
   }
   footer p::before{
-    content:"—————";
-    padding:10px;
+    content:"———";
   }
 </style>

@@ -156,9 +156,6 @@ export default {
     border-radius:30px;
   }
   /* 密码强度 */
-  section .strong{
-    margin:4px 50px 4px 50px;
-  }
   section .strong span{
     background-color:#f9d194;
     padding:2px 30px;

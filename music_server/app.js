@@ -79,13 +79,13 @@ server.get("/readlist",(req,res)=>{
 // 创建歌单
 server.get("/createmuscilist",(req,res)=>{
   var title=req.query.title;
-  var mid=req.query.mid;
+  var uid=req.query.uid;
   if(!title){
     res.send({code:-1,msg:"标题不能为空!"});
     return;
   }
-  var sql="INSERT INTO wy_mymusiclist VALUES(null,?)";
-  pool.query(sql,[title],(err,result)=>{
+  var sql="INSERT INTO wy_mymusiclist VALUES(null,?,?)";
+  pool.query(sql,[title,uid],(err,result)=>{
     if(err) throw err;
     if(result.affectedRows==0){
       res.send({code:-1,msg:"添加失败!"});
@@ -350,14 +350,14 @@ server.get("/search",(req,res)=>{
 
 //查询创建的歌单
 server.get("/musiclist",(req,res)=>{
-  // var uid=req.session.uid;
-  // console.log(uid);
-  // if(!uid){
-  //   res.send({code:-1,msg:"请登录",data:[]});
-  //   return;
-  // }
-  var sql="SELECT mid,title FROM wy_mymusiclist";
-  pool.query(sql,(err,result)=>{
+  var uid=req.session.uid;
+  console.log(uid);
+  if(!uid){
+    res.send({code:-1,msg:"请登录",data:[]});
+    return;
+  }
+  var sql="SELECT mid,title FROM wy_mymusiclist WHERE uid=?";
+  pool.query(sql,[uid],(err,result)=>{
     if(err) throw err;
     res.send({code:1,data:result});
   })
@@ -366,7 +366,6 @@ server.get("/musiclist",(req,res)=>{
 // 删除创建的歌单
 server.get("/delmusiclist",(req,res)=>{
   var mid=req.query.mid;
-  // console.log(mid);
   var sql="DELETE FROM wy_mymusiclist WHERE mid=?";
   pool.query(sql,[mid],(err,result)=>{
     if(err) throw err;
@@ -380,10 +379,9 @@ server.get("/delmusiclist",(req,res)=>{
 
 // 查询收藏的歌单
 server.get("/likelist",(req,res)=>{
-  // var uid=req.session.uid;
-  // console.log(uid);
-  var sql="SELECT lid,title,author FROM wy_mylikelist";
-  pool.query(sql,(err,result)=>{
+  var uid=req.session.uid;
+  var sql="SELECT lid,title,author FROM wy_mylikelist WHERE uid=?";
+  pool.query(sql,[uid],(err,result)=>{
     if(err) throw err;
     res.send({code:1,data:result});
   })

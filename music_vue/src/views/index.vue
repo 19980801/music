@@ -13,7 +13,7 @@
 							</mt-swipe>
 						</div>
 						<div class="nav">
-							<ul class="list-unstyled d-flex mt-3">
+							<ul class="list-unstyled d-flex mt-3 justify-content-around">
 								<li>
 									<router-link to="daylist">
 										<img src="http://127.0.0.1:3001/imgs/nav1.png">
@@ -42,7 +42,7 @@
 						</div>
 						<div class="text-left mt-4">	
 							<h5 class="font-weight-bold text-dark ml-2">推荐歌曲</h5>
-							<ul class="f1-list list-unstyled d-flex">
+							<ul class="f1-list list-unstyled d-flex justify-content-around">
 								<li v-for="item of playList" :key="item.i">
 									<a :href="item.a_href">
 										<div class="top">
@@ -109,8 +109,8 @@
 							</a>
 						</li>
 					</ul>
-					<div class="bg-white border-top container mt-2">
-						<ul class="list-unstyled">
+					<div class="bg-white border-top container mt-2 m-0">
+						<ul class="list-unstyled ">
 							<li class="p-2">
 								<div class="d-flex">
 									<div @click="toggle(1)" class="row">
@@ -129,7 +129,7 @@
 												<input type="text" class="w-75" placeholder="歌单标题" required v-model="title">
 											</form>
 										</mt-popup>
-										<span class="iconfont icon-gengduo font-weight-bold"></span>
+										<!-- <span class="iconfont icon-gengduo font-weight-bold"></span> -->
 									</div>
 								</div>
 								<div v-show="show===1" class="list" v-if="isLogin">
@@ -161,16 +161,16 @@
 										<span class="mui-icon mui-icon-arrowright"></span>
 										<h4 class="text-dark font-weight-bold">我收藏的歌单</h4>
 									</div>
-									<div class="right">
+									<!-- <div class="right">
 										<span class="iconfont icon-gengduo font-weight-bold"></span>
-									</div>
+									</div> -->
 								</div>
 								<div v-show="show===2" class="list" v-if="isLogin">
 									<ul class="list-unstyled">
-										<li v-for="(item,i) of likeList" :key="i" class="mid">
-											<div class="mui-table-view-cell p-1" @click="dels">
-												<div class="mui-slider-right"  >
-													<a class="mui-btn mui-btn-red text-white" >删除</a>
+										<li v-for="(item,i) of likeList" :key="i">
+											<div class="mui-table-view-cell p-1">
+												<div class="mui-slider-right">
+													<a class="mui-btn mui-btn-red text-white">删除</a>
 												</div>
 												<div class="mui-slider-handle">
 													<div class="mui-media">
@@ -198,16 +198,16 @@
 					</header>
 					<section class="bg-white container p-0">
 						<div class="f1 text-left">
-							<nav class="d-flex">
-								<span class="iconfont icon-tuijian mt-2 ml-2 mr-2"></span>
+							<nav class="d-flex justify-content-around">
+								<span class="iconfont icon-tuijian mt-2"></span>
 								<span class="text-dark font-weight-bold mt-2" @click="cur=0" :class="{active:cur==0}">热门推荐</span>
-								<div class="menuList ml-2">
+								<div class="menuList">
 									<ul class="list-unstyled d-flex">
-										<li @click="cur=1" :class="{active:cur==1}"><a href="#" class="font-style text-dark">华语</a></li>
-										<li @click="cur=2" :class="{active:cur==2}"><a href="#" class="font-style text-dark">流行</a></li>
-										<li @click="cur=3" :class="{active:cur==3}"><a href="#" class="font-style text-dark">摇滚</a></li>
-										<li @click="cur=4" :class="{active:cur==4}"><a href="#" class="font-style text-dark">民谣</a></li>
-										<li @click="cur=5" :class="{active:cur==5}"><a href="#" class="font-style text-dark">电子</a></li>
+										<li @click="cur=1" :class="{active:cur==1}" class="pl-1"><a href="#" class="font-style text-dark">华语</a></li>
+										<li @click="cur=2" :class="{active:cur==2}" class="pl-1"><a href="#" class="font-style text-dark">流行</a></li>
+										<li @click="cur=3" :class="{active:cur==3}" class="pl-1"><a href="#" class="font-style text-dark">摇滚</a></li>
+										<li @click="cur=4" :class="{active:cur==4}" class="pl-1"><a href="#" class="font-style text-dark">民谣</a></li>
+										<li @click="cur=5" :class="{active:cur==5}" class="pl-1"><a href="#" class="font-style text-dark">电子</a></li>
 									</ul>
 								</div>
 								<router-link class="mt-2 iconfont icon-gengduo1 text-dark" to="more">更多</router-link>
@@ -478,6 +478,7 @@ export default {
 			isLogin:false,
 			img:"",
 			uname:"",
+			uid:""
 		}
 	},
 	created() {
@@ -495,15 +496,11 @@ export default {
 		this.new();
 	},	
 	methods: {
-			dels(){
-			var mid=document.querySelector(".mid");
-			console.log(mid);
-			mid.style.display="none";
-		},
 		login(){
 			if(sessionStorage.getItem("uname")){
 				this.uname=sessionStorage.getItem("uname");
 				this.img=sessionStorage.getItem("img_url");
+				this.uid=sessionStorage.getItem("uid");
 				this.isLogin=true;
 				this.musiclist();
 				this.likelist();
@@ -512,6 +509,7 @@ export default {
 		exit(){
 			sessionStorage.removeItem("uname");
 			sessionStorage.removeItem("img_url");
+			sessionStorage.removeItem("uid");
 			this.isLogin=false;
 			this.$toast("已退出");
 		},
@@ -549,12 +547,14 @@ export default {
 		//创建歌单
 		createmusiclist(){
 			var title=this.title;
+			var uid=this.uid;
 			this.axios.get("http://127.0.0.1:3001/createmuscilist",{
-				params:{title}
+				params:{title,uid}
 			}).then(result=>{
 				if(result.data.code==1){
 					this.$toast("创建成功!");
 					this.closeOnClickModal();
+					this.musiclist();
 				}else{
 					this.$toast(result.data.msg);
 				}
@@ -625,6 +625,9 @@ export default {
 }
 </script>
 <style>
+	.app-index{
+		width:100%;
+	}
 	.app-index .font-style{font-size:14px;}
 	.app-index footer .mui-bar-tab .mui-tab-item.mui-active{
 		color:#C20C0C;
@@ -643,6 +646,7 @@ export default {
 	}
 	.app-index #tabbar .nav{
 		height:100px;
+		width:100%;
 		box-shadow:2px 2px 2px 2px #ddd;
 	}
 	.app-index #tabbar .nav ul>li>a{
@@ -653,12 +657,14 @@ export default {
 		border-radius:50%;
 		line-height:46px;
 	}
-	.app-index #tabbar .nav ul>li{
-		margin:0 24px;
+
+	.app-index #tabbar .nav ul{
+		width:100%;
 	}
 	.app-index #tabbar .f1-list{
 		display:flex;
 		flex-wrap:wrap;
+		justify-content:space-between;
 	}
 	.app-index #tabbar .f1-list>li{
 		margin:3px 3px;
@@ -690,6 +696,7 @@ export default {
 		background-color:#C20C0C;
 		color:#fff;
 		padding:10px;
+		width:100%;
 	}
 	.app-index #tabbar-with-music ul>li.mui-table-view-cell .iconfont{
 		font-size:25px;
@@ -697,15 +704,11 @@ export default {
 	}
 	.app-index #tabbar-with-music .right{
 		position: relative;
+		width:100px;
 	}
 	.app-index #tabbar-with-music .right>span:first-child{
 		position:absolute;
-		left:220px;
-	}
-	.app-index #tabbar-with-music .right>span:last-child{
-		position:absolute;
-		left:260px;
-		top:2px;
+		left:100%;
 	}
 	.app-index #tabbar-with-music .right .create{
 		width:100%;
@@ -724,7 +727,7 @@ export default {
 		padding:10px;
 	}
 	.app-index #tabbar-with-contact .menuList ul>li{
-		margin:8px 5px 0 6px;
+		margin:8px 0;
 	}
 	.app-index #tabbar-with-contact .f1 nav{
 		height:50px;
@@ -768,7 +771,7 @@ export default {
 		border-bottom:2px solid #C20C0C;
 	}
 	.app-index #tabbar-with-contact .f2 .f2-content{
-		height:395px;
+		height:100%;
 		margin-top:5px;
 	}
 	.app-index #tabbar-with-contact .f2 .top{
