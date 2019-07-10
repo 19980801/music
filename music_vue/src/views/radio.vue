@@ -1,5 +1,9 @@
 <template>
   <div>
+    <!-- 插槽 -->
+    <my-header>
+      <div slot="title">广告管理</div>
+    </my-header>
     <header class="text-left justify-content-between d-flex">
       <router-link to="index" class="mui-icon mui-icon-back p-2 text-white"></router-link>
       <span class="mt-2">电台</span>
@@ -123,8 +127,10 @@
     </section>
   </div>
 </template>
+
 <script>
 import BScroll from 'better-scroll'
+import myHeader from '@/components/header.vue'
 export default {
   data () {
     return {
@@ -281,6 +287,9 @@ export default {
   //     return 0
   //   }
   // }
+  components:{
+    myHeader
+  }
 }
 </script>
 
